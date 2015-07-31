@@ -1,19 +1,13 @@
-def main(nick, comargvs, chan):
-    print(nick)
-    print(comargvs)
-    print(chan)
-    print("module has ran")
+import time
+
+def main(nick, comargvs, chan, send):
+    '''nick is who sent the command type of string
+    comargvs is anything after the command, such as a website or other supporting args  of type #todo
+    chan is either the channel to send to, or our own nick in which case is a private message
     
-    #This is what your module returns as it's out put. It REQUIRES it to be
-    #    a list, message returns a list, not a tupe, not a string but a LIST.
-    message = ["My return here"]
+    send is the method from the base class irc.sendIrc
+    I will add more examples here soon to show how we can use it.
+    For now, I just send a string for testing'''
+    time.sleep(5)
+    send("Success!")
     
-    #MUST return a tuple in this order.
-    #nick is who sent it
-    #chan is either the channel it was sent on OR our own nick, if our own
-    #    nick is equal to chan, it is a private message, irc.py will handle it 
-    #    anyway. But return it anyway so irc.py can handle it.
-    #    I.E. chan is either the channel we got the message OR it is our own nickname
-    #        in which case it is a private message, irc.py will handle it either way.
-    #message is what ever you want to send, it is the return of what your module does.
-    return (nick, chan, message)
