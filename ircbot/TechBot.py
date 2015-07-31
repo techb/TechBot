@@ -1,6 +1,14 @@
+'''This needs to be restructured. Modules should have at least access to irc.sendIrc()
+It's abstract enough to where they only need little knowledge of it. Plus it would clean
+this class up a lot. I need a day with no distractions and just do it, we'll see....'''
+
 import irc
 import os
 import importlib
+import multiprocessing
+import queue
+import time
+
 
 class TechBot(irc.Irc):
     def __init__(self):
@@ -10,14 +18,11 @@ class TechBot(irc.Irc):
         self.adons = {}
         self.loadAllAdons()
 
-    def test(self, x):
-        '''debug to make sure adons where loaded, hasn't faild in a while now, juts respect file path'''
-        self.adons[x].main()
-        self.showDefaults()
 
     def loadAllAdons(self):
         '''adons are in /adons, ignore the cache (python3 lol), loads the dict with
-        key = command/module name and value = module handle to exicute it's main()'''
+        key = command/module name and value = module handle to exicute it's main()
+        ToDo: os.glob would probably be better here.'''
         adon_names = os.listdir(self.adon_folder)
         for adon in adon_names:
             # ignore the cache
@@ -40,33 +45,43 @@ class TechBot(irc.Irc):
         else:
             return data
             
-    def handleCommand(self, data):
-        '''As of right now on public publish, threads are not implemented
-        so if a module fails, so will core. modules/adons can crash core atm.
-        BUT will be fixed in the next week or so. Just give me a little time.'''
+    def checkCommand(self, data):
+        '''This checks whether its a command or not and sees if we have a module to
+        handle it.'''
         if type(data) is tuple:
             who = data[0]
             command = data[1]
             chan = data[2]
-            #check if it's a command, then send to approperate command module
+            # check if it's a command, then send to approperate command module
             if command[0] == "!":
-                com = command.split()[0][1:].strip() #get command name minus the !
-                comargv = " ".join(command.split()[1:]).strip() #get argument/s
+                com = command.split()[0][1:].strip() # get command name minus the !
+                comargv = " ".join(command.split()[1:]).strip() # get argument/s
                 if com in self.adons.keys():
-                    modreturn = self.adons[com].main(who, comargv, chan)
-                    self.sendIrc(modreturn)
-            
+                    return (who, comargv, chan, self.adons[com])
+                else:
+                    return "NOT FOUND"
+
     def main(self):
-        '''handleData() will be gone soon, so take it as it is for the moment. this main() will be
-        to handle command input, or sub-forward to irc class to handle internals. This method will change.
-        Modules writers don't need to worry about it though. This is a core dev thing.'''
+        '''This method, since it's main, will be under construction till I'm happy with it.
+        For now, we don't use queues anymore and just pass the send function as an argument to
+        the subprocess. Using SSL is giving some weired errors, so I'm not using it till I can
+        check out pyopenssl or something. I'll file an issue or something soon.'''
         while True:
             fulldata = self.recvData()
-            print(fulldata)
             if fulldata:
+                print(fulldata)
                 data = self.handleData(fulldata)
-                self.handleCommand(data)
-                
+                check = self.checkCommand(data)
+                if check:
+                    if check == "NOT FOUND":
+                        self.sendIrc("Command not found")
+                        continue # nothing else to do, so go back to main loop
+                    else:
+                        print("Command found and ran")
+                        print(check)
+                        com_process = multiprocessing.Process(target=check[3].main, args=(check[0], check[1], check[2], self.sendIrc))
+                        com_process.start()
+
 # And so we begin.
 if __name__ == "__main__":
     bot = TechBot()
