@@ -36,7 +36,8 @@ class Irc:
 
     def getSocket(self):
         '''Creates and returns the socket handle. This object instance should remain in this class.
-        anything pertaining to irc connections, this class should explicitaly handle it'''
+        anything pertaining to irc connections, this class should explicitaly handle it.
+        set socket timeout to 0.0 for non-blocking.'''
         if self.use_ssl:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sslsock = ssl.wrap_socket(s)
@@ -48,13 +49,17 @@ class Irc:
             return sock
     
     def sendIrc(self, data):
-        '''check if private message, and send to who it needs to be sent.
+        '''if it's just a string, assume it's a message we send to default channel
+        check if private message, and send to who it needs to be sent.
         if chan is our nick, then it's private message'''
+        if type(data) == str:
+            self.sendData("PRIVMSG %s :%s\r\n" % (self.channel, data))
+            return
+
         print(data)
         nick = data[0]
         chan = data[1]
         message = data[2]
-        
         if type(message) != list:
             print("Module didn't return as list, ignoring")
             
@@ -87,17 +92,8 @@ class Irc:
         self.sendData("USER %s 0 * :%s\r\n" % (self.nick, self.realname))
         while True:
             data = self.recvData()
-            if "004 %s" % self.nick in data:
-                self.sendData("JOIN %s\r\n" % self.channel)
-                break
-        
-    def showConfig(self):
-        '''Show what we have gotten from the config file.'''
-        print(self.server)
-        print(self.use_ssl)
-        print(self.port)
-        print(self.channel)
-        print(self.poschan)
-        print(self.nick)
-        print(self.realname)
-        print(self.nickserv_pass)
+            if data:
+                if "004 %s" % self.nick in data:
+                    self.sendData("JOIN %s\r\n" % self.channel)
+                    break
+
