@@ -1,0 +1,24 @@
+<khofo> !convert help
+<TechBot> Usage Example: 10 ft to m
+<khofo> !convert 10 m to ft
+<TechBot> 10.0 Meters = 32.8084 Feet
+<khofo> !convert 10 m to yds
+<TechBot> 10.0 Meters = 10.9361 Yards
+<khofo> !convert 10 ft to m 
+<TechBot> 10.0 Feet = 3.048 Meters
+<khofo> !convert 10 ft to yds
+<TechBot> 10.0 Feet = 3.3329999999999997 Yards
+<khofo> !convert 10 yds to m
+<TechBot> 10.0 Yards = 9.144 Meters
+<khofo> !convert 10 yds to ft
+<TechBot> 10.0 Yards = 30.0 Feet
+<khofo> !convert 10 lb to kg
+<TechBot> 10.0 Pounds = 4.53592 Kilograms
+<khofo> !convert 10 kg to lb
+<TechBot> 10.0 Kilograms = 22.046 Pounds
+<khofo> !convert 10 f to c
+<TechBot> 10.0 Degrees Fahreinheit = -12.21 Degrees Celsius
+<khofo> !convert 10 c to f
+<TechBot> 10.0 Degrees Celsius = 50.0 Degrees Fahreinheit
+<khofo> !convert sdgdv
+<khofo> ^ to prevent 'help' floods
