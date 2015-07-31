@@ -74,12 +74,12 @@ class Irc:
 
     def sendData(self, data):
         '''sends the data, we have to encode because Python3 sting leterals are unicode'''
-        self.sock.send(data.encode("ascii"))
+        self.sock.send(data.encode('utf-8'))
 
     def recvData(self):
         '''decode received data because unicode, process basic irc stuff here 
         like ping/pong, ect...'''
-        data = self.sock.recv(1024).decode('ascii')
+        data = self.sock.recv(1024).decode('utf-8')
         if data[:4] == "PING":
             self.sendData("PONG :%s\r\n" % data.split(":")[1])
         return data
