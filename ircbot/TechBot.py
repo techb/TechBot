@@ -1,13 +1,18 @@
-'''This needs to be restructured. Modules should have at least access to irc.sendIrc()
-It's abstract enough to where they only need little knowledge of it. Plus it would clean
-this class up a lot. I need a day with no distractions and just do it, we'll see....'''
+'''SSL issue is solved. Using queues and select now.
+For module writers, I am passing a queue to the module. So instead
+of send('your data') it will be send.put('your data'). This should not
+change anymore.
+
+The only issue now would be zombie processes since I don't .join() any of them.
+I'll be working on that next, which shouldn't take long.'''
 
 import irc
 import os
 import importlib
 import multiprocessing
-import queue
 import time
+import ssl
+import selectors
 
 
 class TechBot(irc.Irc):
@@ -17,6 +22,7 @@ class TechBot(irc.Irc):
         self.adon_folder = "adons"
         self.adons = {}
         self.loadAllAdons()
+        print("[+] init finished")
 
 
     def loadAllAdons(self):
@@ -45,9 +51,9 @@ class TechBot(irc.Irc):
         else:
             return data
             
-    def checkCommand(self, data):
-        '''This checks whether its a command or not and sees if we have a module to
-        handle it.'''
+    def checkCommand(self, data, q):
+        '''This checks whether its a command or not and sees if we have a module tohandle it.
+        If we do, start a new process, the new process will send results to the queue'''
         if type(data) is tuple:
             who = data[0]
             command = data[1]
@@ -57,30 +63,35 @@ class TechBot(irc.Irc):
                 com = command.split()[0][1:].strip() # get command name minus the !
                 comargv = " ".join(command.split()[1:]).strip() # get argument/s
                 if com in self.adons.keys():
-                    return (who, comargv, chan, self.adons[com])
+                    com_process = multiprocessing.Process(target=self.adons[com].main, args=(who, comargv, chan, q))
+                    com_process.start()
+                    print("[+] Found and ran addon %s" % com)
                 else:
-                    return "NOT FOUND"
+                    print("[-] Not Found")
 
     def main(self):
         '''This method, since it's main, will be under construction till I'm happy with it.
-        For now, we don't use queues anymore and just pass the send function as an argument to
-        the subprocess. Using SSL is giving some weired errors, so I'm not using it till I can
-        check out pyopenssl or something. I'll file an issue or something soon.'''
+        Went back to using queues. Also using select. SSL issues have been solved. Anything
+        in a queue is to be sent to the irc chan.'''
+        # SimpleQueue because .empty() is safer than regular Queue
+        q = multiprocessing.SimpleQueue()
+        # Python3 recommends using selector instead of select unless you need finer control
+        sel = selectors.DefaultSelector()
+        sel.register(self.sock, selectors.EVENT_READ, self.recvData)
         while True:
-            fulldata = self.recvData()
-            if fulldata:
-                print(fulldata)
-                data = self.handleData(fulldata)
-                check = self.checkCommand(data)
-                if check:
-                    if check == "NOT FOUND":
-                        self.sendIrc("Command not found")
-                        continue # nothing else to do, so go back to main loop
-                    else:
-                        print("Command found and ran")
-                        print(check)
-                        com_process = multiprocessing.Process(target=check[3].main, args=(check[0], check[1], check[2], self.sendIrc))
-                        com_process.start()
+            if not q.empty():
+                d = q.get()
+                self.sendIrc(d)
+                
+            event = sel.select(.1) # timeout .1, else it'll block making the queue useless.
+            if event:
+                for key, mask in event:
+                    callback = key.data
+                    fulldata = callback(key.fileobj)
+                if fulldata:
+                    print(fulldata)
+                    data = self.handleData(fulldata)
+                    check = self.checkCommand(data, q)
 
 # And so we begin.
 if __name__ == "__main__":
