@@ -59,7 +59,7 @@ class TechBot(irc.Irc):
             command = data[1]
             chan = data[2]
             # check if it's a command, then send to approperate command module
-            if command[0] == "!":
+            if command[0] == ".":
                 com = command.split()[0][1:].strip() # get command name minus the !
                 comargv = " ".join(command.split()[1:]).strip() # get argument/s
                 if com in self.adons.keys():
