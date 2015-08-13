@@ -1,10 +1,7 @@
-#!/usr/bin/python
-
 '''
 Adaptation of the convert.py (for BeastBot), for TechBot in python3
 this module converts units after the command !convert, 
 For Evilzone IRC (irc.evilzone.org)
-
 By: Khofo
 '''
 
