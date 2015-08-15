@@ -14,7 +14,6 @@ def define(word):
         for c in defset[0].contents:
             if type(c) == bs4.element.Tag:
                 rs += c.get_text()
-                print(c)
             else:
                 rs += c
 
