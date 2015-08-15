@@ -22,6 +22,7 @@ class TechBot(irc.Irc):
         self.adon_folder = "adons"
         self.adons = {}
         self.loadAllAdons()
+        self.process_list = []
         print("[+] init finished")
 
 
@@ -65,6 +66,7 @@ class TechBot(irc.Irc):
                 if com in self.adons.keys():
                     com_process = multiprocessing.Process(target=self.adons[com].main, args=(who, comargv, chan, q))
                     com_process.start()
+                    self.process_list.append(com_process)
                     print("[+] Found and ran addon %s" % com)
                 else:
                     print("[-] Not Found")
@@ -92,6 +94,12 @@ class TechBot(irc.Irc):
                     print(fulldata)
                     data = self.handleData(fulldata)
                     check = self.checkCommand(data, q)
+                    
+            # loop through a copy of the list of sub processes and join any zombies, then remove from list
+            for subproc in self.process_list[:]:
+                if not subproc.is_alive():
+                    subproc.join()
+                    self.process_list.remove(subproc)
 
 # And so we begin.
 if __name__ == "__main__":
