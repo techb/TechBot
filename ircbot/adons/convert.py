@@ -1,80 +1,81 @@
 '''
 Adaptation of the convert.py (for BeastBot), for TechBot in python3
-this module converts units after the command !convert, 
+this module converts units after the command !convert,
 For Evilzone IRC (irc.evilzone.org)
 By: Khofo
+
+Edit: techb
+Am working in making this work. I'm sorry Khofo, but this code is ugly,
+am cleaning and will make a working clean example for you. I know python
+might not be your go-to dev language or your still learning, will try and
+make things clear here.
 '''
 
 
 '''                    START CONVERSIONS                         '''
 
-def kg_to_lb(number,send):
+def kg_to_lb(number):
     result = number*float(2.2046)
-    send.put(str(number) + " Kilograms = " + str(result) + " Pounds")
+    return str(number) + " Kilograms = " + str(result) + " Pounds"
 
-def lb_to_kg(number,send):
+def lb_to_kg(number):
     result = number*float(0.453592)
-    send.put(str(number) + " Pounds = " + str(result) + " Kilograms")
-def f_to_c(number,send):
+    return str(number) + " Pounds = " + str(result) + " Kilograms"
+
+def f_to_c(number):
     result = (number-32)*float(0.555)
-    send.put(str(number) + " Degrees Fahreinheit = " + str(result) + " Degrees Celsius")
+    return str(number) + " Degrees Fahreinheit = " + str(result) + " Degrees Celsius"
 
-def c_to_f(number,send):
+def c_to_f(number):
     result = (number*float(1.8))+32
-    send.put(str(number) + " Degrees Celsius = " + str(result) + " Degrees Fahreinheit")
+    return str(number) + " Degrees Celsius = " + str(result) + " Degrees Fahreinheit"
 
-def m_to_ft(number,send):
+def m_to_ft(number):
     result = number*float(3.28084)
-    send.put(str(number) + " Meters = " + str(result)+" Feet" )
+    return str(number) + " Meters = " + str(result)+" Feet"
 
-def ft_to_m(number,send):
+def ft_to_m(number):
     result = number*float(0.3048)
-    send.put(str(number) + " Feet = " + str(result)+" Meters")
+    return str(number) + " Feet = " + str(result)+" Meters"
 
-def m_to_yds(number,send):
+def m_to_yds(number):
     result = number*float(1.09361)
-    send.put(str(number) + " Meters = " + str(result)+" Yards")
+    return str(number) + " Meters = " + str(result)+" Yards"
 
-def ft_to_yds(number,send):
+def ft_to_yds(number):
     result = number*float(0.3333)
-    send.put(str(number) + " Feet = " + str(result)+" Yards")
+    return str(number) + " Feet = " + str(result)+" Yards"
 
-def yrds_to_m(number,send):
+def yrds_to_m(number):
     result = number*float(0.9144)
-    send.put(str(number) + " Yards = " + str(result)+" Meters")    
+    return str(number) + " Yards = " + str(result)+" Meters"
 
-def yrds_to_ft(number,send):
+def yrds_to_ft(number):
     result = number*float(3)
-    send.put(str(number) + " Yards = " + str(result)+" Feet")
+    return str(number) + " Yards = " + str(result)+" Feet"
 
 '''               END OF CONVERSIONS                      '''
 
 def main(nick, comargvs, chan, send):
-    try:
-        numArgs = comargvs.split()
-        if numArgs != '':
-            if comargvs == "help":
-                send.put("Usage Example: 10 ft to m")
-            else:
-                pass
-            number = numArgs[0] #the number to be converted
-            unit_from = numArgs[1].lower() # unit to convert from 
-            unit_to = numArgs[3].lower() # unit to convert to
-            send.put(conversion(unit_from, unit_to, number,send))
+    numArgs = comargvs.split()
+    if numArgs != '':
+        if comargvs == "help":
+            send.put("Usage Example: 10 ft to m")
+        else:
             pass
-    except:
-        pass
+        number = numArgs[0] #the number to be converted
+        unit_from = numArgs[1].lower() # unit to convert from
+        unit_to = numArgs[3].lower() # unit to convert to
+        conversion(unit_from, unit_to, number, send)
 
-        
-def conversion(unit_from, unit_to, number, send):    
-        
+def conversion(unit_from, unit_to, number, send):
     try:
         number = float(number.strip())
     except:
         send.put("Usage Example: 10 ft to m")
-    
-    linear = { ('m', 'ft')  : "m_to_ft",  
-               ('m', 'yds') : "m_to_yds",   
+
+    linear = { ('m', 'ft')  : "m_to_ft",
+               ('m', 'yds') : "m_to_yds",
                ("ft", "m")  : "ft_to_m",
                ("ft", "yds"): "ft_to_yds",
                ("yds", "m") : "yds_to_m",
@@ -86,36 +87,36 @@ def conversion(unit_from, unit_to, number, send):
                }
     if (unit_from, unit_to) in linear:
         if linear[(unit_from, unit_to)] == "m_to_ft":
-            send.put(m_to_ft(number,send))
-        
+            send.put(m_to_ft(number))
+
         elif linear[(unit_from, unit_to)] == "m_to_yds":
-            send.put(m_to_yds(number,send))
-        
-        elif linear[(unit_from, unit_to)] == "ft_to_m": 
-            send.put(ft_to_m(number,send))
-        
+            send.put(m_to_yds(number))
+
+        elif linear[(unit_from, unit_to)] == "ft_to_m":
+            send.put(ft_to_m(number))
+
         elif linear[(unit_from, unit_to)] == "ft_to_yds":
-            send.put(ft_to_yds(number, send))
-        
+            send.put(ft_to_yds(number))
+
         elif linear[(unit_from, unit_to)] == "yds_to_m":
-            send.put(yrds_to_m(number,send))
-        
+            send.put(yrds_to_m(number))
+
         elif linear[(unit_from, unit_to)] == "yds_to_ft":
-            send.put(yrds_to_ft(number,send))
-        
+            send.put(yrds_to_ft(number))
+
         elif linear[(unit_from, unit_to)] == "kg_to_lb":
-            send.put(kg_to_lb(number,send))
-        
+            send.put(kg_to_lb(number))
+
         elif linear[(unit_from, unit_to)] == "lb_to_kg":
-            send.put(lb_to_kg(number,send))
-        
+            send.put(lb_to_kg(number))
+
         elif linear[(unit_from, unit_to)] == "f_to_c":
-            send.put(f_to_c(number,send))
-        
+            send.put(f_to_c(number))
+
         elif linear[(unit_from, unit_to)] == "c_to_f":
-            send.put(c_to_f(number,send))
+            send.put(c_to_f(number))
         else:
             pass
     else:
-        error = "ERROR: For usage please refer to !convert help"
+        error = "ERROR: For usage please refer to .convert help"
         send.put(error)
