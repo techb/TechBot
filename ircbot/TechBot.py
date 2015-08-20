@@ -19,27 +19,27 @@ class TechBot(irc.Irc):
     def __init__(self):
         '''init this class, and also irc class.'''
         irc.Irc.__init__(self)
-        self.adon_folder = "adons"
-        self.adons = {}
-        self.loadAllAdons()
-        self.process_list = []
+        self.addon_folder = "addons"
+        self.addons = {}
+        self.loadAlladdons()
+        self.process_list = []addon
         print("[+] init finished")
 
 
-    def loadAllAdons(self):
-        '''adons are in /adons, ignore the cache (python3 lol), loads the dict with
+    def loadAlladdons(self):
+        '''addons are in /addons, ignore the cache (python3 lol), loads the dict with
         key = command/module name and value = module handle to exicute it's main()
         ToDo: os.glob would probably be better here.'''
-        adon_names = os.listdir(self.adon_folder)
-        for adon in adon_names:
+        addon_names = os.listdir(self.addon_folder)
+        for addon in addon_names:
             # ignore the cache
-            if adon == "__pycache__":
+            if addon == "__pycache__":
                 continue
-            adon = adon.split('.')[0] # take the .py off
+            addon = addon.split('.')[0] # take the .py off
             # dynamically load modules from absolute path
-            mod = importlib.import_module('.'.join((self.adon_folder, adon)))
-            self.adons[adon] = mod # dict key=name value=object handle
-            
+            mod = importlib.import_module('.'.join((self.addon_folder, addon)))
+            self.addons[addon] = mod # dict key=name value=object handle
+
     def handleData(self, data):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
         irc.recvData SHOULD handle disconnects and stuff. irc.recvData SHOULD only return PRIVMSGs but I
@@ -51,7 +51,7 @@ class TechBot(irc.Irc):
             return (who, msg, where)
         else:
             return data
-            
+
     def checkCommand(self, data, q):
         '''This checks whether its a command or not and sees if we have a module tohandle it.
         If we do, start a new process, the new process will send results to the queue'''
@@ -63,8 +63,8 @@ class TechBot(irc.Irc):
             if command[0] == ".":
                 com = command.split()[0][1:].strip() # get command name minus the !
                 comargv = " ".join(command.split()[1:]).strip() # get argument/s
-                if com in self.adons.keys():
-                    com_process = multiprocessing.Process(target=self.adons[com].main, args=(who, comargv, chan, q))
+                if com in self.addons.keys():
+                    com_process = multiprocessing.Process(target=self.addons[com].main, args=(who, comargv, chan, q))
                     com_process.start()
                     self.process_list.append(com_process)
                     print("[+] Found and ran addon %s" % com)
@@ -84,7 +84,7 @@ class TechBot(irc.Irc):
             if not q.empty():
                 d = q.get()
                 self.sendIrc(d)
-                
+
             event = sel.select(.1) # timeout .1, else it'll block making the queue useless.
             if event:
                 for key, mask in event:
@@ -94,7 +94,7 @@ class TechBot(irc.Irc):
                     print(fulldata)
                     data = self.handleData(fulldata)
                     check = self.checkCommand(data, q)
-                    
+
             # loop through a copy of the list of sub processes and join any zombies, then remove from list
             for subproc in self.process_list[:]:
                 if not subproc.is_alive():
