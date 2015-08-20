@@ -15,9 +15,12 @@ multiprocesses that had been started as 'addons'.
 Fixed spelling, adon has been chaged to addons as per everyone pointing it out lol.
 
 
+------------------
 --NOTICE--
+
 Instead of code, you can fix spelling errors and such in the comments and all. Make a pull request
 for what you fixed.
+------------------
 
 
 Logging has been added, you can log all, or filter phrases or words. This is done in the irc.config file
