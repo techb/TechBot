@@ -20,6 +20,7 @@ Fixed spelling, adon has been chaged to addons as per everyone pointing it out l
 
 Instead of code, you can fix spelling errors and such in the comments and all. Make a pull request
 for what you fixed.
+
 ------------------
 
 
