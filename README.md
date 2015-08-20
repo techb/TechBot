@@ -24,4 +24,5 @@ usign CSV. Look at the config file for an example.
  - Timed things, such as random or certian points, post an update for something.
  - Random (current) links to hacking and securrity related stuff. Maybe a .hot command to grab links from security blogs.
  - EZ related things, like recent posts or stats or something.
+ - See a word or phrase someone said and link to an article, or respond with something?
  - User input?
