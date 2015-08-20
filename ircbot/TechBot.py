@@ -22,7 +22,7 @@ class TechBot(irc.Irc):
         self.addon_folder = "addons"
         self.addons = {}
         self.loadAlladdons()
-        self.process_list = []addon
+        self.process_list = []
         print("[+] init finished")
 
 

@@ -5,10 +5,8 @@ For Evilzone IRC (irc.evilzone.org)
 By: Khofo
 
 Edit: techb
-Am working in making this work. I'm sorry Khofo, but this code is ugly,
-am cleaning and will make a working clean example for you. I know python
-might not be your go-to dev language or your still learning, will try and
-make things clear here.
+fixed some errors, also cleaned the code up enough to keep OP effort
+in place.
 '''
 
 
@@ -57,22 +55,23 @@ def yrds_to_ft(number):
 '''               END OF CONVERSIONS                      '''
 
 def main(nick, comargvs, chan, send):
-    numArgs = comargvs.split()
-    if numArgs != '':
-        if comargvs == "help":
-            send.put("Usage Example: 10 ft to m")
-        else:
-            pass
+    numArgs = comargvs.strip().split()
+    print(numArgs)
+    if comargvs == "help":
+        send.put("convert Usage Example: 10 ft to m")
+    elif len(numArgs) == 4:
         number = numArgs[0] #the number to be converted
         unit_from = numArgs[1].lower() # unit to convert from
         unit_to = numArgs[3].lower() # unit to convert to
         conversion(unit_from, unit_to, number, send)
+    else:
+        send.put("convert Usage Example: 10 ft to m")
 
 def conversion(unit_from, unit_to, number, send):
     try:
         number = float(number.strip())
     except:
-        send.put("Usage Example: 10 ft to m")
+        send.put("convert Usage Example: 10 ft to m")
 
     linear = { ('m', 'ft')  : "m_to_ft",
                ('m', 'yds') : "m_to_yds",
@@ -115,8 +114,7 @@ def conversion(unit_from, unit_to, number, send):
 
         elif linear[(unit_from, unit_to)] == "c_to_f":
             send.put(c_to_f(number))
-        else:
-            pass
+
     else:
         error = "ERROR: For usage please refer to .convert help"
         send.put(error)
