@@ -38,8 +38,7 @@ class Irc:
         self.log_filter = self.cfg.getboolean("logging", "log_filter")
         if self.log_filter:
             self.log_filters = self.cfg.get("logging", "filters").split(',')
-        if self.log_all or self.log_filter:
-            self.log_file = open(self.cfg.get("logging", "log_file"), 'a')
+            self.log_filters = [x.strip() for x in self.log_filters]
 
         self.sock = self.getSocket()
         atexit.register(self.handleExit)
@@ -90,7 +89,7 @@ class Irc:
 
     def recvData(self, sock):
         '''decode received data because unicode, process basic irc stuff here
-        like ping/pong, ect...'''
+        like ping/pong, ect... Added logging.'''
         data = sock.recv(1024).decode("utf-8")
         if data[:4] == "PING":
             self.sendData("PONG :%s\r\n" % data.split(":")[1])
@@ -98,12 +97,14 @@ class Irc:
 
         # write log data to file
         if self.log_all:
-            self.log_file.write(data)
+            with open("log.txt", 'a') as logfile:
+                logfile.write(data)
         elif not self.log_all and self.log_filter:
             for f in self.log_filters:
                 if f in data.strip():
                     print(f)
-                    self.log_file.write(data)
+                    with open("log.txt", 'a') as logfile:
+                        logfile.write(data)
 
         return data
 
@@ -123,8 +124,6 @@ class Irc:
     def handleExit(self):
         '''If this program exits, run this method, used to clean up open handles.'''
         print("-"*20)
-        print("Something happened, exiting")
+        print("Something happened, closing socket")
         print("-"*20)
         self.sock.close()
-        if self.log_all or self.log_filter:
-            self.log_file.close()
