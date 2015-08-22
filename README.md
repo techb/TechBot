@@ -19,6 +19,10 @@ Fixed spelling, adon has been chaged to addons as per everyone pointing it out l
 Logging has been added, you can log all, or filter phrases or words. This is done in the irc.config file
 usign CSV. Look at the config file for an example.
 
+##Issues
+I need to develope a better way to handle sending things via sendIrc(). Maybe force nick and chan to be used
+or at least addressed in the addons?
+
 ###TO-DO
  - Start adding channel op things such as flood control and user logs (diff with host mask and last seen kinda things).
  - Timed things, such as random or certian points, post an update for something.
