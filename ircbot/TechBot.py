@@ -1,10 +1,5 @@
-'''SSL issue is solved. Using queues and select now.
-For module writers, I am passing a queue to the module. So instead
-of send('your data') it will be send.put('your data'). This should not
-change anymore.
-
-The only issue now would be zombie processes since I don't .join() any of them.
-I'll be working on that next, which shouldn't take long.'''
+'''Every thing is working now. Zombies have also been taken care of. logging
+implemented in irc.py'''
 
 import irc
 import os
@@ -39,6 +34,7 @@ class TechBot(irc.Irc):
             # dynamically load modules from absolute path
             mod = importlib.import_module('.'.join((self.addon_folder, addon)))
             self.addons[addon] = mod # dict key=name value=object handle
+        print("[+] Addons loaded.")
 
     def handleData(self, data):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
@@ -83,7 +79,10 @@ class TechBot(irc.Irc):
         while True:
             if not q.empty():
                 d = q.get()
-                self.sendIrc(d)
+                if type(d) == tuple:
+                    self.sendIrc(d[0], d[1])
+                else:
+                    self.sendIrc(d)
 
             event = sel.select(.1) # timeout .1, else it'll block making the queue useless.
             if event:
@@ -91,7 +90,6 @@ class TechBot(irc.Irc):
                     callback = key.data
                     fulldata = callback(key.fileobj)
                 if fulldata:
-                    print(fulldata)
                     data = self.handleData(fulldata)
                     check = self.checkCommand(data, q)
 

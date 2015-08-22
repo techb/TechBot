@@ -21,8 +21,8 @@ def urban(word):
         return output
     except IndexError:
         return "No definition."
-                
+
 def main(nick, comargs, chan, send):
     w = comargs.strip()
     define = urban(w)
-    send.put(define)
+    send.put((define, chan))

@@ -21,12 +21,11 @@ def define(word):
             out = "Def: %s" % rs.strip() # strip() incase of prepended or tailing \n
             more = "More on %s found: %s" % (word, url)
             return([out, more])
-            
+
     except urllib.error.HTTPError as e:
         return "404 word not found"
-        
+
 def main(nick, comargs, chan, send):
     comargs = comargs.strip()
     data = define(comargs)
-    send.put((nick, chan, data))
-    
+    send.put((data, chan))

@@ -9,4 +9,4 @@ def main(nick, comargs, chan, send):
         send.put("How about no. Go fuck yourself %s" % nick)
     else:
         phrase = comargs.strip()
-        send.put(phrase)
+        send.put((phrase, chan))
