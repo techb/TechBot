@@ -1,7 +1,11 @@
 import urllib
 import urllib.request
-import bs4
-from bs4 import BeautifulSoup
+import sys
+try:
+    import bs4
+    from bs4 import BeautifulSoup
+except:
+    sys.exit()
 
 def define(word):
     rs = ''
