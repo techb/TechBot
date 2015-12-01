@@ -18,6 +18,7 @@ class TechBot(irc.Irc):
         self.addons = {}
         self.loadAlladdons()
         self.process_list = []
+        self.prepender = "."
         print("[+] init finished")
 
 
@@ -56,7 +57,7 @@ class TechBot(irc.Irc):
             command = data[1]
             chan = data[2]
             # check if it's a command, then send to approperate command module
-            if command[0] == ".":
+            if command[0] == self.prepender:
                 com = command.split()[0][1:].strip() # get command name minus the !
                 comargv = " ".join(command.split()[1:]).strip() # get argument/s
                 if com in self.addons.keys():
@@ -80,7 +81,6 @@ class TechBot(irc.Irc):
             if not q.empty():
                 d = q.get()
                 if type(d) == tuple:
-                    #self.sendIrc(d[0], d[1])
                     self.sendIrc(d[0], d[1])
                 else:
                     self.sendIrc(d)

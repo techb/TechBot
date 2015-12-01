@@ -77,21 +77,6 @@ class Irc:
             self.sendData("PRIVMSG %s :%s\r\n" % (to, data))
             return
 
-        '''# There is a better way to do this, will work on it soon.
-        print(data)
-        nick = data[0]
-        chan = data[1]
-        message = data[2]
-
-        if chan == self.nick:
-            print("[+] Sent priv message to %s" % nick)
-            for line in message:
-                self.sendData("PRIVMSG %s :%s\r\n" % (nick, line))
-        else:
-            print("[+] Sent message to %s" % chan)
-            for line in message:
-                self.sendData("PRIVMSG %s :%s\r\n" % (chan, line))'''
-
     def sendData(self, data):
         '''sends the data, we have to encode because Python3 sting leterals are unicode'''
         self.sock.send(data.encode("utf-8"))

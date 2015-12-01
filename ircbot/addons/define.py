@@ -1,6 +1,11 @@
+# Defines a word.
+# Requires lxml
+#   pip3 install lxml
+
 import urllib
 import urllib.request
 import sys
+
 try:
     import bs4
     from bs4 import BeautifulSoup
@@ -22,14 +27,14 @@ def define(word):
                 rs += c
 
         if defset:
-            out = "Def: %s" % rs.strip() # strip() incase of prepended or tailing \n
+            out = "Def %s: %s" % (word, rs.strip()) # strip() incase of prepended or tailing \n
             more = "More on %s found: %s" % (word, url)
-            return([out, more])
+            return(out)
 
     except urllib.error.HTTPError as e:
-        return "404 word not found"
+        return("404 word not found")
 
 def main(nick, comargs, chan, send):
     comargs = comargs.strip()
     data = define(comargs)
-    send.put((data, chan))
+    send.put(data)
