@@ -58,14 +58,15 @@ def main(nick, comargvs, chan, send):
     numArgs = comargvs.strip().split()
     print(numArgs)
     if comargvs == "help":
-        send.put("convert Usage Example: 10 ft to m")
+        send.put(("convert Usage Example: 10 ft to m", chan))
     elif len(numArgs) == 4:
         number = numArgs[0] #the number to be converted
         unit_from = numArgs[1].lower() # unit to convert from
         unit_to = numArgs[3].lower() # unit to convert to
-        conversion(unit_from, unit_to, number, send)
+        con = conversion(unit_from, unit_to, number)
+        send.put((con, chan))
     else:
-        send.put("convert Usage Example: 10 ft to m")
+        send.put(("convert Usage Example: 10 ft to m", chan))
 
 def conversion(unit_from, unit_to, number, send):
     try:
@@ -86,34 +87,34 @@ def conversion(unit_from, unit_to, number, send):
                }
     if (unit_from, unit_to) in linear:
         if linear[(unit_from, unit_to)] == "m_to_ft":
-            send.put(m_to_ft(number))
+            send.put((m_to_ft(number), chan))
 
         elif linear[(unit_from, unit_to)] == "m_to_yds":
-            send.put(m_to_yds(number))
+            return(m_to_yds(number))
 
         elif linear[(unit_from, unit_to)] == "ft_to_m":
-            send.put(ft_to_m(number))
+            return(ft_to_m(number))
 
         elif linear[(unit_from, unit_to)] == "ft_to_yds":
-            send.put(ft_to_yds(number))
+            return(ft_to_yds(number))
 
         elif linear[(unit_from, unit_to)] == "yds_to_m":
-            send.put(yrds_to_m(number))
+            return(yrds_to_m(number))
 
         elif linear[(unit_from, unit_to)] == "yds_to_ft":
-            send.put(yrds_to_ft(number))
+            return(yrds_to_ft(number))
 
         elif linear[(unit_from, unit_to)] == "kg_to_lb":
-            send.put(kg_to_lb(number))
+            return(kg_to_lb(number))
 
         elif linear[(unit_from, unit_to)] == "lb_to_kg":
-            send.put(lb_to_kg(number))
+            return(lb_to_kg(number))
 
         elif linear[(unit_from, unit_to)] == "f_to_c":
-            send.put(f_to_c(number))
+            return(f_to_c(number))
 
         elif linear[(unit_from, unit_to)] == "c_to_f":
-            send.put(c_to_f(number))
+            return(c_to_f(number))
 
     else:
         error = "ERROR: For usage please refer to .convert help"

@@ -37,4 +37,4 @@ def define(word):
 def main(nick, comargs, chan, send):
     comargs = comargs.strip()
     data = define(comargs)
-    send.put(data)
+    send.put((data, chan))

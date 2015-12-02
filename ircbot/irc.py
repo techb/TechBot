@@ -67,15 +67,13 @@ class Irc:
             #sock.setblocking(False)
             return sock
 
-    def sendIrc(self, data, to=None):
-        '''if it's just a string, assume it's a message we send to default channel
-        check if private message, and send to who it needs to be sent.
-        if chan is our nick, then it's private message'''
-        if to == None:
-            to = self.channel
+    def sendIrc(self, data, to):
+        '''Sends a string off to be sent to the irc. Data is said string
+        to is where it goes.'''
         if type(data) == str:
             self.sendData("PRIVMSG %s :%s\r\n" % (to, data))
-            return
+        else:
+            print("[!] Data not string, check your addon")
 
     def sendData(self, data):
         '''sends the data, we have to encode because Python3 sting leterals are unicode'''
