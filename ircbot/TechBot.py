@@ -81,7 +81,8 @@ class TechBot(irc.Irc):
             if not q.empty():
                 d = q.get()
                 if type(d) == tuple:
-                    self.sendIrc(d[0], to=d[1])
+                    print(d[1])
+                    self.sendIrc(d[0], d[1])
                 else:
                     self.sendIrc(d)
 
