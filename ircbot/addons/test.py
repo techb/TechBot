@@ -12,3 +12,6 @@ def main(nick, comargs, chan, send):
     print(comargs)
     time.sleep(1)
     send.put(("Success!", chan))
+
+    # You can send just a string, it will go to the default channle you set in irc.config
+    send.put("Success! No chan info provided, going to default channel")

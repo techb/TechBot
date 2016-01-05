@@ -24,7 +24,7 @@ class TechBot(irc.Irc):
 
     def loadAlladdons(self):
         '''addons are in /addons, ignore the cache (python3 lol), loads the dict with
-        key = command/module name and value = module handle to exicute it's main()
+        key = command/module name and value = module handle to execute it's main()
         ToDo: os.glob would probably be better here.'''
         addon_names = os.listdir(self.addon_folder)
         for addon in addon_names:
@@ -39,23 +39,26 @@ class TechBot(irc.Irc):
 
     def handleData(self, data):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
-        irc.recvData SHOULD handle disconnects and stuff. irc.recvData SHOULD only return PRIVMSGs but I
-        am tring to push public, this will all eventually change. Module writers will have nothign to worry about thoug.'''
+        Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.'''
+        print(data)
         if "PRIVMSG" in data:
             who = data.split(":")[1].split("!")[0].strip()
             msg = data.split(":")[-1].strip()
             where = data.split(":")[1].split("PRIVMSG")[1].strip()
+            print(where)
             return (who, msg, where)
         else:
             return data
 
     def checkCommand(self, data, q):
-        '''This checks whether its a command or not and sees if we have a module tohandle it.
+        '''This checks whether its a command or not and sees if we have a module to handle it.
         If we do, start a new process, the new process will send results to the queue'''
         if type(data) is tuple:
             who = data[0]
             command = data[1]
             chan = data[2]
+            if chan == self.nick:
+                chan = who
             # check if it's a command, then send to approperate command module
             if command[0] == self.prepender:
                 com = command.split()[0][1:].strip() # get command name minus the prepender
@@ -80,11 +83,12 @@ class TechBot(irc.Irc):
         while True:
             if not q.empty():
                 d = q.get()
+                # modules can return a tuple to specify who it goes to, or a raw string.
                 if type(d) == tuple:
-                    print(d[1])
                     self.sendIrc(d[0], d[1])
                 else:
-                    self.sendIrc(d)
+                    #if module sends a raw string, it will go to default channel.
+                    self.sendIrc(d, self.channel)
 
             event = sel.select(.1) # timeout .1, else it'll block making the queue useless.
             if event:
