@@ -8,6 +8,8 @@ import multiprocessing
 import time
 import ssl
 import selectors
+import signal
+import sys
 
 
 class TechBot(irc.Irc):
@@ -19,6 +21,7 @@ class TechBot(irc.Irc):
         self.loadAlladdons()
         self.process_list = []
         self.prepender = "."
+        signal.signal(signal.SIGINT, self.sig_handler)
         print("[+] init finished")
 
 
@@ -39,14 +42,21 @@ class TechBot(irc.Irc):
 
     def handleData(self, data):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
-        Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.'''
+        Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.
+        Added JOIN, I'm thinking of sending it to an addon to stay modular. Doesn't do anything atm.'''
         print(data)
         if "PRIVMSG" in data:
             who = data.split(":")[1].split("!")[0].strip()
             msg = data.split(":")[-1].strip()
             where = data.split(":")[1].split("PRIVMSG")[1].strip()
-            print(where)
             return (who, msg, where)
+
+        if "JOIN :" in data:
+            who = data.split(":")[1].split("!")[0].strip()
+            hostmask = data.split(":")[1].split("JOIN")[0].strip()
+            where = data.split(":")[-1].strip()
+            return("JOIN", who, hostmask, where)
+
         else:
             return data
 
@@ -70,6 +80,15 @@ class TechBot(irc.Irc):
                     print("[+] Found and ran addon %s" % com)
                 else:
                     print("[-] Not Found")
+
+    def sig_handler(self, signal, frame):
+        '''Used to catch ctrl-c, so now you can send messages as the bot. Usefull for maitnance such as vhost
+        and nickserv and such. If you want to kill the bot type /exit '''
+        msg = input(">>> ")
+        if msg == "/exit":
+            sys.exit()
+        else:
+            self.sendIrc(msg, self.channel)
 
     def main(self):
         '''This method, since it's main, will be under construction till I'm happy with it.
