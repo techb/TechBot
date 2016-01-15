@@ -18,6 +18,7 @@ class Irc:
             self.cfg.read("irc.config")
 
         # setup server info, convert types as needed
+        self.admin = self.cfg.get("ircserver", "admin")
         self.server = self.cfg.get("ircserver", "server")
         self.use_ssl = self.cfg.getboolean("ircserver", "ssl")
         if self.use_ssl:
@@ -75,13 +76,8 @@ class Irc:
 
         else:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #try:
             sock.connect((self.server, self.port))
-            #except ConnectionRefusedError:
-            #print("[!] Peer refused connection, try again")
-            #sys.exit()
             print("[+] Connected to %s on port %d" % (self.server, self.port))
-            #sock.setblocking(False)
             return sock
 
     def sendIrc(self, data, to):
@@ -132,8 +128,8 @@ class Irc:
                     self.sendData("JOIN %s\r\n" % self.channel)
                     if self.poschan:
                         for c in self.poschan:
-                            print(c)
                             self.sendData("JOIN #%s\r\n" % c)
+                            print("[+] Joining %s" % c)
                     break
 
     def handleExit(self):
