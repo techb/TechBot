@@ -63,7 +63,7 @@ def main(nick, comargvs, chan, send):
         number = numArgs[0] #the number to be converted
         unit_from = numArgs[1].lower() # unit to convert from
         unit_to = numArgs[3].lower() # unit to convert to
-        con = conversion(unit_from, unit_to, number)
+        con = conversion(unit_from, unit_to, number, send)
         send.put((con, chan))
     else:
         send.put(("convert Usage Example: 10 ft to m", chan))
@@ -72,7 +72,7 @@ def conversion(unit_from, unit_to, number, send):
     try:
         number = float(number.strip())
     except:
-        send.put("convert Usage Example: 10 ft to m")
+        return("convert Usage Example: 10 ft to m")
 
     linear = { ('m', 'ft')  : "m_to_ft",
                ('m', 'yds') : "m_to_yds",
@@ -87,7 +87,7 @@ def conversion(unit_from, unit_to, number, send):
                }
     if (unit_from, unit_to) in linear:
         if linear[(unit_from, unit_to)] == "m_to_ft":
-            send.put((m_to_ft(number), chan))
+            return(m_to_ft(number))
 
         elif linear[(unit_from, unit_to)] == "m_to_yds":
             return(m_to_yds(number))
@@ -117,5 +117,4 @@ def conversion(unit_from, unit_to, number, send):
             return(c_to_f(number))
 
     else:
-        error = "ERROR: For usage please refer to .convert help"
-        send.put(error)
+        return("ERROR: For usage please refer to .convert help")
