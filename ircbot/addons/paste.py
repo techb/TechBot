@@ -2,7 +2,7 @@
     google-1.7
     https://pypi.python.org/pypi/google
 
-    can use pip to install: pip2 install google
+    can use pip to install: pip3 install google
     It gives warning from internel use of Beautiful soup
       but shouldn't show up in IRC, just in the terminal the
       bot is running on.
