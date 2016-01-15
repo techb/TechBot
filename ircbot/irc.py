@@ -2,7 +2,9 @@ import socket
 import ssl
 import configparser
 import os
+import sys
 import atexit
+import traceback
 
 class Irc:
     def __init__(self, cfg_file=None):
@@ -44,8 +46,13 @@ class Irc:
         print("[+] Creating socket.")
         try:
             self.sock = self.getSocket()
+        except ConnectionRefusedError:
+            print("[!] Peer refused connection, try again.")
+            sys.exit()
         except:
-            print("[!] Failed creating socket.")
+            print("[!] Something went wrong, here's the traceback.")
+            traceback.print_exc()
+            sys.exit()
 
         atexit.register(self.handleExit)
         self.ircInit()
@@ -57,12 +64,22 @@ class Irc:
         if self.use_ssl:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sslsock = ssl.wrap_socket(s)
+
+            #try:
             sslsock.connect((self.server, self.port))
+            #except ConnectionRefusedError:
+            #print("[!] Peer refused connection, try again")
+            #sys.exit()
             print("[+] Connected to %s on port %d" % (self.server, self.port))
             return sslsock
+
         else:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #try:
             sock.connect((self.server, self.port))
+            #except ConnectionRefusedError:
+            #print("[!] Peer refused connection, try again")
+            #sys.exit()
             print("[+] Connected to %s on port %d" % (self.server, self.port))
             #sock.setblocking(False)
             return sock
@@ -72,6 +89,7 @@ class Irc:
         to is where it goes.'''
         if type(data) == str:
             self.sendData("PRIVMSG %s :%s\r\n" % (to, data))
+            print("PRIVMSG %s :%s\r\n" % (to, data))
         else:
             print("[!] Data not string, check your addon")
 
