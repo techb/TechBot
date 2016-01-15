@@ -5,6 +5,7 @@ import os
 import sys
 import atexit
 import traceback
+import time
 
 class Irc:
     def __init__(self, cfg_file=None):
@@ -65,12 +66,7 @@ class Irc:
         if self.use_ssl:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sslsock = ssl.wrap_socket(s)
-
-            #try:
             sslsock.connect((self.server, self.port))
-            #except ConnectionRefusedError:
-            #print("[!] Peer refused connection, try again")
-            #sys.exit()
             print("[+] Connected to %s on port %d" % (self.server, self.port))
             return sslsock
 
@@ -95,10 +91,18 @@ class Irc:
 
     def recvData(self, sock):
         '''decode received data because unicode, process basic irc stuff here
-        like ping/pong, ect... Added logging.'''
+        like ping/pong, ect... Added logging. Added rejoin after kcik.'''
         data = sock.recv(1024).decode("utf-8")
         if data[:4] == "PING":
             self.sendData("PONG :%s\r\n" % data.split(":")[1])
+
+        if "KICK" in data:
+            kdata = data.split("KICK")[1].strip().split(":")[0]
+            if self.nick in kdata and self.channel in kdata:
+                print("was kicked")
+                time.sleep(5)
+                print("trying rejoin")
+                self.sendData("JOIN %s\r\n" % self.channel)
 
         # write log data to file
         if self.log_all:
