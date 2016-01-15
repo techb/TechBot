@@ -24,6 +24,14 @@ class TechBot(irc.Irc):
         signal.signal(signal.SIGINT, self.sig_handler)
         print("[+] init finished")
 
+    def loadAddon(self, addon):
+        # dynamically load modules from absolute path
+        try:
+            mod = importlib.import_module('.'.join((self.addon_folder, addon)))
+            self.addons[addon] = mod # dict key=name value=object handle
+            print("[+] Added %s" % addon)
+        except:
+            print("[-] addon not found.")
 
     def loadAlladdons(self):
         '''addons are in /addons, ignore the cache (python3 lol), loads the dict with
@@ -35,21 +43,26 @@ class TechBot(irc.Irc):
             if addon == "__pycache__":
                 continue
             addon = addon.split('.')[0] # take the .py off
-            # dynamically load modules from absolute path
-            mod = importlib.import_module('.'.join((self.addon_folder, addon)))
-            self.addons[addon] = mod # dict key=name value=object handle
-        print("[+] Addons loaded.")
+            self.loadAddon(addon)
+        print("[+] All addons loaded.")
 
     def handleData(self, data):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
         Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.
         Added JOIN, I'm thinking of sending it to an addon to stay modular. Doesn't do anything atm.'''
-        print(data)
         if "PRIVMSG" in data:
+            print(data)
             who = data.split(":")[1].split("!")[0].strip()
             msg = data.split(":")[-1].strip()
             where = data.split(":")[1].split("PRIVMSG")[1].strip()
             return (who, msg, where)
+
+        if "NOTICE TechBot :\001VERSION" in data:
+            print(data)
+            who = data.split(":")[1].split("!")[0].strip()
+            info = data.split("VERSION")
+            info = info[-1].strip().strip("\001")
+            self.sendIrc("%s: %s" %(who, info), self.channel)
 
         if "JOIN :" in data:
             who = data.split(":")[1].split("!")[0].strip()
@@ -62,7 +75,8 @@ class TechBot(irc.Irc):
 
     def checkCommand(self, data, q):
         '''This checks whether its a command or not and sees if we have a module to handle it.
-        If we do, start a new process, the new process will send results to the queue'''
+        If we do, start a new process, the new process will send results to the queue. Also
+        handles loading and reloading addons.'''
         if type(data) is tuple:
             who = data[0]
             command = data[1]
@@ -78,8 +92,15 @@ class TechBot(irc.Irc):
                     com_process.start()
                     self.process_list.append(com_process)
                     print("[+] Found and ran addon %s" % com)
-                else:
-                    print("[-] Not Found")
+
+                # load a new addon while running, reloads if already present. Checks if admin/bot owner.
+                elif com == "loadaddon" and who == self.admin:
+                    addon = comargv.strip()
+                    if addon in self.addons.keys():
+                        importlib.reload(self.addons[addon])
+                        print("[+] Reloaded addon.")
+                    else:
+                        self.loadAddon(addon)
 
     def sig_handler(self, signal, frame):
         '''Used to catch ctrl-c, so now you can send messages as the bot. Usefull for maitnance such as vhost
