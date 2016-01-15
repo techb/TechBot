@@ -10,6 +10,7 @@ import ssl
 import selectors
 import signal
 import sys
+import traceback
 
 
 class TechBot(irc.Irc):
@@ -51,28 +52,33 @@ class TechBot(irc.Irc):
         Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.
         Added JOIN, I'm thinking of sending it to an addon to stay modular. Doesn't do anything atm.'''
         #print(data)
-        if "PRIVMSG" in data:
-            print(data.encode("utf-8"))
-            who = data.split(":")[1].split("!")[0].strip()
-            msg = data.split(":")[-1].strip()
-            where = data.split(":")[1].split("PRIVMSG")[1].strip()
-            return (who, msg, where)
+        try:
+            if "PRIVMSG" in data:
+                print(data.encode("utf-8"))
+                who = data.split(":")[1].split("!")[0].strip()
+                msg = data.split(":")[-1].strip()
+                where = data.split(":")[1].split("PRIVMSG")[1].strip()
+                return (who, msg, where)
 
-        if "NOTICE TechBot :\001VERSION" in data:
-            print(data.encode("utf-8"))
-            who = data.split(":")[1].split("!")[0].strip()
-            info = data.split("VERSION")
-            info = info[-1].strip().strip("\001")
-            self.sendIrc("%s: %s" %(who, info), self.channel)
+            if "NOTICE TechBot :\001VERSION" in data:
+                print(data.encode("utf-8"))
+                who = data.split(":")[1].split("!")[0].strip()
+                info = data.split("VERSION")
+                info = info[-1].strip().strip("\001")
+                self.sendIrc("%s: %s" %(who, info), self.channel)
 
-        if "JOIN :" in data:
-            who = data.split(":")[1].split("!")[0].strip()
-            hostmask = data.split(":")[1].split("JOIN")[0].strip()
-            where = data.split(":")[-1].strip()
-            return("JOIN", who, hostmask, where)
+            if "JOIN :" in data:
+                who = data.split(":")[1].split("!")[0].strip()
+                hostmask = data.split(":")[1].split("JOIN")[0].strip()
+                where = data.split(":")[-1].strip()
+                return("JOIN", who, hostmask, where)
 
-        else:
-            return data
+            else:
+                return data
+        except:
+            print("[!!] Something weired happend, traceback:")
+            traceback.print_exc()
+            pass
 
     def checkCommand(self, data, q):
         '''This checks whether its a command or not and sees if we have a module to handle it.
