@@ -88,10 +88,15 @@ class TechBot(irc.Irc):
             who = data[0]
             command = data[1]
             chan = data[2]
+            print("#"*20)
+            print(data)
+            print("#"*20)
+            print(command)
+            print("#"*20)
             if chan == self.nick:
                 chan = who
             # check if it's a command, then send to approperate command module
-            if command[0] == self.prepender:
+            if command and command[0] == self.prepender:
                 com = command.split()[0][1:].strip() # get command name minus the prepender
                 comargv = " ".join(command.split()[1:]).strip() # get argument/s
                 if com in self.addons.keys():
