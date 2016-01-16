@@ -106,14 +106,14 @@ class Irc:
 
         # write log data to file
         if self.log_all:
-            print(data)
+            print(data.encode("utf-8"))
             with open("log.txt", 'a') as logfile:
                 logfile.write(data)
 
         elif not self.log_all and self.log_filter:
             for f in self.log_filters:
                 if f in data.strip():
-                    print(data)
+                    print(data.encode("utf-8"))
                     with open("log.txt", 'a') as logfile:
                         logfile.write(data)
 

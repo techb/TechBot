@@ -51,7 +51,7 @@ class TechBot(irc.Irc):
         '''Handles on PRIVMSG atm, anything else [I.E.] irc stuff should be handled in the irc class.
         Haven't implemented disconnects or rejoins. Also ctc stuff not included yet. But will sometime.
         Added JOIN, I'm thinking of sending it to an addon to stay modular. Doesn't do anything atm.'''
-        print(data)
+        print(data.encode("utf-8")
         try:
             if "PRIVMSG" in data:
                 #print(data.encode("utf-8"))
