@@ -92,8 +92,8 @@ class Irc:
     def recvData(self, sock):
         '''decode received data because unicode, process basic irc stuff here
         like ping/pong, ect... Added logging. Added rejoin after kcik.'''
-        data = sock.recv(1024).decode("utf-8")
-        if data[:4] == "PING":
+        data = sock.recv(4096).decode("utf-8")
+        if "PING" in data:
             self.sendData("PONG :%s\r\n" % data.split(":")[1])
 
         if "KICK" in data:
