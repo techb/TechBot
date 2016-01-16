@@ -88,11 +88,6 @@ class TechBot(irc.Irc):
             who = data[0]
             command = data[1]
             chan = data[2]
-            print("#"*20)
-            print(data)
-            print("#"*20)
-            print(command)
-            print("#"*20)
             if chan == self.nick:
                 chan = who
             # check if it's a command, then send to approperate command module
