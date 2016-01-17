@@ -81,7 +81,6 @@ class Irc:
         to is where it goes.'''
         if type(data) == str:
             self.sendData("PRIVMSG %s :%s\r\n" % (to, data))
-            print("PRIVMSG %s :%s\r\n" % (to, data))
         else:
             print("[!] Data not string, check your addon")
 
