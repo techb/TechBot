@@ -32,6 +32,7 @@ class TechBot(irc.Irc):
             self.addons[addon] = mod # dict key=name value=object handle
             print("[+] Added %s" % addon)
         except:
+            traceback.print_exc()
             print("[-] addon not found.")
 
     def loadAlladdons(self):
