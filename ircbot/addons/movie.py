@@ -18,7 +18,8 @@ def getMovieInfo(title):
         return (data['Title'],
                 data['Year'],
                 data['imdbRating'],
-                data['Plot'])
+                data['Plot'],
+                data['imdbID')
     else:
         return (False, "Movie: %s not found, check spelling?" % title)
 
@@ -26,5 +27,6 @@ def main(nick, comargs, chan, send):
     data = getMovieInfo(comargs)
     if data[0] != False:
         send.put(("%s: Year: %s IMDB: %s Plot: %s" % (data[0], data[1], data[2], data[3]), chan))
+        send.put(("http://www.imdb.com/title/tt2294629/%s/" %data[4], chan)
     else:
         send.put((data[1], chan))
